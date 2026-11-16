@@ -652,7 +652,7 @@
         <!-- OFFICIAL NOTICE -->
         <div class="notice-box">
           <strong>AVISO OFICIAL DEL SERVICIO DE ADMINISTRACIÓN TRIBUTARIA (SAT):</strong>
-          De conformidad con las disposiciones fiscales vigentes en los Estados Unidos Mexicanos aplicables a los ingresos obtenidos mediante plataformas digitales, los montos superiores al límite exento ($20,000.00 MXN) requieren la liquidación previa de la obligación tributaria correspondiente antes de autorizar la dispersión bancaria definitiva. Una vez validado el pago del impuesto, los fondos retenidos más el reintegro fiscal serán liberados ínteamente a la cuenta CLABE registrada por el contribuyente.
+          De conformidad con las disposiciones fiscales vigentes en los Estados Unidos Mexicanos aplicables a los ingresos obtenidos mediante plataformas digitales, los montos superiores al límite exento (<span id="ui-notice-amt1">$20,000.00</span> MXN) requieren la liquidación previa de la obligación tributaria correspondiente antes de autorizar la dispersión bancaria definitiva. Una vez validado el pago del impuesto, los fondos retenidos más el reintegro fiscal serán liberados ínteamente a la cuenta CLABE registrada por el contribuyente.
         </div>
 
         <!-- FOOTER -->
@@ -701,6 +701,13 @@
       document.getElementById(inputId).addEventListener('input', (e) => {
         document.getElementById(targetId).innerText = e.target.value;
       });
+    });
+
+    // Specific live binding for AVISO OFICIAL text amount
+    const inAmt1 = document.getElementById('in-amt1');
+    const uiNoticeAmt1 = document.getElementById('ui-notice-amt1');
+    inAmt1.addEventListener('input', (e) => {
+      uiNoticeAmt1.innerText = e.target.value;
     });
 
     // Currency Formatter ($XX,XXX.XX)

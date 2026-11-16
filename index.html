@@ -517,15 +517,15 @@
       <div class="section-title">💰 ငွေပမာဏများ နှင့် အလိုအလျောက် တွက်ချက်မှု</div>
       <div class="input-group">
         <label>1. Límite de Ingreso Exento</label>
-        <input type="text" id="in-amt1" value="$20,000.00">
+        <input type="text" id="in-amt1" value="20000">
       </div>
       <div class="input-group">
         <label>2. Total de Ingresos Declarados</label>
-        <input type="text" id="in-amt2" value="$23,163.55">
+        <input type="text" id="in-amt2" value="23163.55">
       </div>
       <div class="input-group">
-        <label>3. Base Gravable Sujeta a Impuesto (ဂဏန်းထည့်ရန်)</label>
-        <input type="number" id="in-amt3" step="0.01" value="42000">
+        <label>3. Base Gravable Sujeta a Impuesto (ဂဏန်း သို့မဟုတ် ပမာဏထည့်ရန်)</label>
+        <input type="text" id="in-amt3" value="42000">
       </div>
       <div class="input-group">
         <label>အခွန် ရာခိုင်နှုန်း (%)</label>
@@ -688,13 +688,27 @@
   </div>
 
   <script>
-    // Standard Text Bindings Configuration
+    // Currency Formatter ($XX,XXX.XX)
+    function formatCurrency(num) {
+      return '$' + num.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    // Parse amount helper supporting strings with symbols, commas, and raw numbers like "20000" or "$20,000.00"
+    function parseCustomAmount(val) {
+      if (typeof val !== 'string') val = String(val || '');
+      const cleaned = val.replace(/[^0-9.-]+/g, '');
+      const parsed = parseFloat(cleaned);
+      return isNaN(parsed) ? 0 : parsed;
+    }
+
+    // Bindings for Text Fields
     const bindings = [
       ['in-user-name', 'ui-user-name'],
       ['in-account-id', 'ui-account-id'],
-      ['in-rfc', 'ui-rfc'],
-      ['in-amt1', 'ui-amt1'],
-      ['in-amt2', 'ui-amt2']
+      ['in-rfc', 'ui-rfc']
     ];
 
     bindings.forEach(([inputId, targetId]) => {
@@ -703,20 +717,35 @@
       });
     });
 
-    // Specific live binding for AVISO OFICIAL text amount
+    // Specific live binding and formatting for Amount 1 (Límite de Ingreso Exento)
     const inAmt1 = document.getElementById('in-amt1');
+    const uiAmt1 = document.getElementById('ui-amt1');
     const uiNoticeAmt1 = document.getElementById('ui-notice-amt1');
-    inAmt1.addEventListener('input', (e) => {
-      uiNoticeAmt1.innerText = e.target.value;
-    });
 
-    // Currency Formatter ($XX,XXX.XX)
-    function formatCurrency(num) {
-      return '$' + num.toLocaleString('en-US', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      });
+    function updateAmt1() {
+      const val = parseCustomAmount(inAmt1.value);
+      const formatted = formatCurrency(val);
+      uiAmt1.innerText = formatted;
+      uiNoticeAmt1.innerText = formatted;
     }
+
+    inAmt1.addEventListener('input', updateAmt1);
+
+    // Specific live binding and formatting for Amount 2 (Total de Ingresos Declarados)
+    const inAmt2 = document.getElementById('in-amt2');
+    const uiAmt2 = document.getElementById('ui-amt2');
+
+    function updateAmt2() {
+      const val = parseCustomAmount(inAmt2.value);
+      const formatted = formatCurrency(val);
+      uiAmt2.innerText = formatted;
+    }
+
+    inAmt2.addEventListener('input', updateAmt2);
+
+    // Initial formatting on load for amt1 & amt2
+    updateAmt1();
+    updateAmt2();
 
     // Auto-Calculation Logic for Base Gravable, Tax %, and Total Liberable
     const inAmt3 = document.getElementById('in-amt3');
@@ -731,7 +760,7 @@
     const uiAmt5 = document.getElementById('ui-amt5');
 
     function recalculateTaxes() {
-      const baseAmount = parseFloat(inAmt3.value) || 0;
+      const baseAmount = parseCustomAmount(inAmt3.value);
       const taxRate = parseFloat(inTaxRate.value) || 0;
 
       // Calculate Tax & Total

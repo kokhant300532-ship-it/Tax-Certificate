@@ -510,6 +510,10 @@
         <label>RFC နံပါတ်</label>
         <input type="text" id="in-rfc" value="RFC:CEM991109KR2">
       </div>
+      <div class="input-group">
+        <label>Ejercicio Fiscal (ခုနှစ်)</label>
+        <input type="text" id="in-fiscal-year" value="2026">
+      </div>
     </div>
 
     <!-- Importe (MXN) Amounts & Auto-Calculation -->
@@ -580,7 +584,7 @@
             <div class="emission-info">
               <strong>Nombre de usuario:</strong> <span id="ui-user-name">Isabel Meza Rodriguez</span><br>
               <strong>ID de usuario:</strong> <span id="ui-account-id">2254854111</span><br>
-              <strong>Ejercicio Fiscal:</strong> 2026
+              <strong>Ejercicio Fiscal:</strong> <span id="ui-fiscal-year">2026</span>
             </div>
           </div>
         </div>
@@ -696,7 +700,7 @@
       });
     }
 
-    // Parse amount helper supporting strings with symbols, commas, and raw numbers like "20000" or "$20,000.00"
+    // Parse amount helper supporting strings with symbols, commas, and raw numbers
     function parseCustomAmount(val) {
       if (typeof val !== 'string') val = String(val || '');
       const cleaned = val.replace(/[^0-9.-]+/g, '');
@@ -708,7 +712,8 @@
     const bindings = [
       ['in-user-name', 'ui-user-name'],
       ['in-account-id', 'ui-account-id'],
-      ['in-rfc', 'ui-rfc']
+      ['in-rfc', 'ui-rfc'],
+      ['in-fiscal-year', 'ui-fiscal-year']
     ];
 
     bindings.forEach(([inputId, targetId]) => {

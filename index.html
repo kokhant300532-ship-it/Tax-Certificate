@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gobierno de México - Acuse de Declaración Fiscal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #0f111a;
+      display: flex;
+      min-height: 100vh;
+      color: #1a1a1a;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    /* CONTROL PANEL STYLES */
+    .control-panel {
+      width: 380px;
+      background-color: #1a1d2d;
+      color: #e2e8f0;
+      padding: 24px;
+      overflow-y: auto;
+      height: 100vh;
+      box-shadow: 4px 0 24px rgba(0,0,0,0.4);
+      flex-shrink: 0;
+      border-right: 1px solid #2a2e45;
+      font-family: 'Padauk', 'Inter', sans-serif;
+    }
+
+    .panel-header {
+      font-size: 19px;
+      font-weight: bold;
+      color: #f3c669;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #323854;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-card {
+      background: #212538;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 16px;
+      border: 1px solid #2d334d;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #8da4c4;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .input-group {
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .input-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .input-group label {
+      font-size: 13px;
+      color: #cbd5e1;
+      font-weight: 500;
+    }
+
+    .input-group input[type="text"],
+    .input-group input[type="number"],
+    .input-group input[type="file"] {
+      background-color: #121420;
+      border: 1px solid #363c5a;
+      color: #fff;
+      padding: 9px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .input-group input[type="text"]:focus,
+    .input-group input[type="number"]:focus {
+      border-color: #f3c669;
+    }
+
+    .input-group input[readonly] {
+      background-color: #181b2c;
+      color: #f3c669;
+      font-weight: bold;
+      cursor: not-allowed;
+    }
+
+    .input-group input[type="file"] {
+      cursor: pointer;
+    }
+
+    /* PREVIEW AREA */
+    .preview-area {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      background-color: #0a0b10;
+      overflow: auto;
+    }
+
+    .document-container {
+      width: 900px;
+      background-color: #ffffff;
+      border: 2px solid #222222;
+      padding: 24px 30px;
+      position: relative;
+      color: #1a1a1a;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    /* Background Watermark */
+    .watermark {
+      position: absolute;
+      top: 52%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 440px;
+      height: 440px;
+      opacity: 0.12;
+      pointer-events: none;
+      z-index: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .watermark img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .content-wrapper {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* HEADER SECTION */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      gap: 12px;
+    }
+
+    .header-left {
+      flex: 1.1;
+      text-align: left;
+    }
+
+    .header-titles h1 {
+      font-size: 15px;
+      font-weight: bold;
+      color: #222;
+      letter-spacing: 0.2px;
+      margin-bottom: 2px;
+    }
+
+    .header-titles h2 {
+      font-size: 11.5px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 2px;
+    }
+
+    .header-titles p {
+      font-size: 10.5px;
+      color: #444;
+    }
+
+    /* Center Logo Area - Made Larger & Clearer */
+    .header-center {
+      flex: 1.1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0 12px;
+      border-left: 2px solid #1a1a1a;
+      border-right: 2px solid #1a1a1a;
+      height: 54px;
+    }
+
+    .logo-img-container {
+      width: 220px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .logo-img-container img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .header-right {
+      flex: 1.1;
+      text-align: right;
+    }
+
+    .folio-box {
+      border: 1px solid #333;
+      padding: 4px 10px;
+      font-size: 11.5px;
+      font-weight: bold;
+      background-color: #f9f9f9;
+      margin-bottom: 5px;
+      display: inline-block;
+    }
+
+    .emission-info {
+      font-size: 11px;
+      line-height: 1.35;
+      color: #222;
+    }
+
+    .header-divider {
+      border: 0;
+      border-top: 1px solid #888;
+      margin-bottom: 14px;
+    }
+
+    /* SECTION BANNERS */
+    .section-banner {
+      background-color: #6b1d2f;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: bold;
+      padding: 6px 12px;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+
+    /* TABLES */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 16px;
+      font-size: 12px;
+    }
+
+    td, th {
+      border: 1px solid #555;
+      padding: 7px 10px;
+      vertical-align: middle;
+    }
+
+    /* Table 1: Taxpayer Info */
+    .info-table td.label {
+      font-weight: bold;
+      width: 19%;
+      background-color: rgba(250, 250, 250, 0.7);
+    }
+
+    .info-table td.val-wide {
+      width: 34%;
+    }
+
+    .info-table td.label-sm {
+      font-weight: bold;
+      width: 18%;
+      background-color: rgba(250, 250, 250, 0.7);
+    }
+
+    .info-table td.val-sm {
+      width: 29%;
+    }
+
+    .status-red {
+      color: #a61c24;
+      font-weight: bold;
+      font-size: 11.5px;
+      line-height: 1.25;
+    }
+
+    /* Table 2: Tax Calculation */
+    .tax-table th {
+      background-color: #e6e8eb;
+      font-weight: bold;
+      color: #111;
+      text-align: left;
+    }
+
+    .tax-table th.center, .tax-table td.center {
+      text-align: center;
+    }
+
+    .tax-table th.right, .tax-table td.right {
+      text-align: right;
+    }
+
+    .row-orange {
+      background-color: rgba(253, 240, 232, 0.85);
+      color: #9e2a2b;
+      font-weight: bold;
+    }
+
+    .row-green {
+      background-color: rgba(232, 245, 233, 0.9);
+      color: #1b5e20;
+      font-weight: bold;
+      font-size: 12.5px;
+    }
+
+    /* NOTICE BOX */
+    .notice-box {
+      border: 1px solid #444;
+      background-color: rgba(248, 249, 250, 0.85);
+      padding: 10px 14px;
+      margin-bottom: 18px;
+      font-size: 11px;
+      line-height: 1.45;
+      color: #222;
+    }
+
+    .notice-box strong {
+      display: block;
+      margin-bottom: 3px;
+      font-size: 11.5px;
+      color: #000;
+    }
+
+    /* FOOTER SECTION */
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 6px;
+      gap: 15px;
+    }
+
+    /* Left Circular Stamp */
+    .stamp-circle {
+      width: 76px;
+      height: 76px;
+      border: 2px solid #2b6cb0;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #2b6cb0;
+      position: relative;
+      flex-shrink: 0;
+      margin-left: 20px;
+      box-shadow: inset 0 0 0 2px #fff, inset 0 0 0 3px #2b6cb0;
+    }
+
+    .stamp-circle .top-arc {
+      font-size: 6px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+
+    .stamp-circle .center-txt {
+      font-size: 8.5px;
+      font-weight: bold;
+      line-height: 1.1;
+      border-top: 1px solid #2b6cb0;
+      border-bottom: 1px solid #2b6cb0;
+      padding: 2px 4px;
+    }
+
+    .stamp-circle .bot-arc {
+      font-size: 6px;
+      font-weight: bold;
+      margin-top: 2px;
+    }
+
+    /* Center Digital Chain Box */
+    .chain-box {
+      flex: 1;
+      border: 1px solid #666;
+      background-color: rgba(250, 250, 250, 0.9);
+      padding: 8px 12px;
+      font-size: 10.5px;
+    }
+
+    .chain-box strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #111;
+    }
+
+    .chain-code {
+      font-family: "Courier New", Courier, monospace;
+      font-size: 10px;
+      color: #333;
+      word-break: break-all;
+      line-height: 1.35;
+    }
+
+    /* Right Verification Stamp */
+    .verified-box {
+      border: 1.5px solid #444;
+      background-color: #f4f4f4;
+      padding: 6px 10px;
+      width: 145px;
+      text-align: center;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .verified-title {
+      font-size: 7.5px;
+      font-weight: bold;
+      color: #222;
+      margin-bottom: 1px;
+    }
+
+    .verified-sub {
+      font-size: 6.5px;
+      color: #444;
+      margin-bottom: 5px;
+    }
+
+    .verified-icons {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .check-square {
+      width: 22px;
+      height: 22px;
+      border: 2px solid #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .ribbon-icon {
+      width: 22px;
+      height: 22px;
+      border: 1.5px solid #555;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LIVE CONTROL SETTING PANEL -->
+  <div class="control-panel">
+    <div class="panel-header">⚙️ Live Control Settings</div>
+    
+    <!-- Image Upload Section -->
+    <div class="section-card">
+      <div class="section-title">🖼️ ပုံများ တင်ရန် (Images)</div>
+      <div class="input-group">
+        <label>အလယ်ခေါင်းစဉ် လိုဂိုပုံ တင်ရန်</label>
+        <input type="file" id="upload-logo" accept="image/*">
+      </div>
+      <div class="input-group">
+        <label>စာရွက်လယ် Watermark ပုံ တင်ရန်</label>
+        <input type="file" id="upload-watermark" accept="image/*">
+      </div>
+    </div>
+
+    <!-- User & Account Info -->
+    <div class="section-card">
+      <div class="section-title">👤 အသုံးပြုသူ နှင့် အကောင့် အချက်အလက်</div>
+      <div class="input-group">
+        <label>Nombre de usuario (အမည်)</label>
+        <input type="text" id="in-user-name" value="Isabel Meza Rodriguez">
+      </div>
+      <div class="input-group">
+        <label>ID de usuario (အကောင့် ID)</label>
+        <input type="text" id="in-account-id" value="2254854111">
+      </div>
+      <div class="input-group">
+        <label>RFC နံပါတ်</label>
+        <input type="text" id="in-rfc" value="RFC:CEM991109KR2">
+      </div>
+    </div>
+
+    <!-- Importe (MXN) Amounts & Auto-Calculation -->
+    <div class="section-card">
+      <div class="section-title">💰 ငွေပမာဏများ နှင့် အလိုအလျောက် တွက်ချက်မှု</div>
+      <div class="input-group">
+        <label>1. Límite de Ingreso Exento</label>
+        <input type="text" id="in-amt1" value="$20,000.00">
+      </div>
+      <div class="input-group">
+        <label>2. Total de Ingresos Declarados</label>
+        <input type="text" id="in-amt2" value="$23,163.55">
+      </div>
+      <div class="input-group">
+        <label>3. Base Gravable Sujeta a Impuesto (ဂဏန်းထည့်ရန်)</label>
+        <input type="number" id="in-amt3" step="0.01" value="42000">
+      </div>
+      <div class="input-group">
+        <label>အခွန် ရာခိုင်နှုန်း (%)</label>
+        <input type="number" id="in-tax-rate" step="0.1" value="45">
+      </div>
+      <div class="input-group">
+        <label>4. Impuesto Federal a Pagar (Auto)</label>
+        <input type="text" id="in-amt4" value="$18,900.00" readonly>
+      </div>
+      <div class="input-group">
+        <label>5. MONTO TOTAL LIBERABLE (Auto)</label>
+        <input type="text" id="in-amt5" value="$60,900.00" readonly>
+      </div>
+    </div>
+  </div>
+
+  <!-- PREVIEW AREA -->
+  <div class="preview-area">
+    <div class="document-container">
+      
+      <!-- Center Emblem Watermark (Dynamic Image) -->
+      <div class="watermark" id="watermark-container">
+        <svg id="default-watermark-svg" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="100" cy="100" r="90" fill="none" stroke="#000" stroke-width="4" stroke-dasharray="6,3"/>
+          <circle cx="100" cy="100" r="78" fill="none" stroke="#000" stroke-width="2"/>
+          <path d="M55,115 Q100,155 145,115" fill="none" stroke="#000" stroke-width="6" stroke-linecap="round"/>
+          <path d="M75,85 L100,50 L125,85 L110,115 L90,115 Z" fill="#000"/>
+          <text x="100" y="32" font-size="11" font-weight="bold" text-anchor="middle" fill="#000">ESTADOS UNIDOS MEXICANOS</text>
+        </svg>
+      </div>
+
+      <div class="content-wrapper">
+        
+        <!-- HEADER: Titles on Left, Larger Logo in Center, Info on Right -->
+        <div class="header">
+          <div class="header-left">
+            <div class="header-titles">
+              <h1>GOBIERNO DE MÉXICO</h1>
+              <h2>Secretaría de Hacienda y Crédito Público (SHCP)</h2>
+              <p>Servicio de Administración Tributaria (SAT) — Acuse de Declaración Fiscal</p>
+            </div>
+          </div>
+
+          <div class="header-center">
+            <div class="logo-img-container" id="logo-container">
+              <span style="font-size: 11px; color: #888; text-align: center;">Logo ပုံထည့်ရန်</span>
+            </div>
+          </div>
+
+          <div class="header-right">
+            <div class="folio-box">FOLIO: SAT-2026-8849201</div>
+            <div class="emission-info">
+              <strong>Nombre de usuario:</strong> <span id="ui-user-name">Isabel Meza Rodriguez</span><br>
+              <strong>ID de usuario:</strong> <span id="ui-account-id">2254854111</span><br>
+              <strong>Ejercicio Fiscal:</strong> 2026
+            </div>
+          </div>
+        </div>
+
+        <hr class="header-divider">
+
+        <!-- SECTION 1 -->
+        <div class="section-banner">1. DATOS DE IDENTIFICACIÓN DEL CONTRIBUYENTE</div>
+        <table class="info-table">
+          <tr>
+            <td class="label">Nombre / Razón Social:</td>
+            <td class="val-wide">USUARIO REGISTRADO MERCADO LIBRE MÉXICO</td>
+            <td class="label-sm">RFC:</td>
+            <td class="val-sm" id="ui-rfc">RFC:CEM991109KR2</td>
+          </tr>
+          <tr>
+            <td class="label">Régimen Fiscal:</td>
+            <td class="val-wide">625 - Régimen de las Actividades Empresariales con ingresos a través de Plataformas Tecnológicas</td>
+            <td class="label-sm">Estatus de Cuenta:</td>
+            <td class="val-sm status-red">RETENCIÓN TEMPORAL<br>POR IMPUESTO</td>
+          </tr>
+        </table>
+
+        <!-- SECTION 2 -->
+        <div class="section-banner">2. DETERMINACIÓN DEL IMPUESTO SOBRE LA RENTA (ISR) E IVA</div>
+        <table class="tax-table">
+          <thead>
+            <tr>
+              <th class="center" style="width: 7%;">No.</th>
+              <th style="width: 53%;">Concepto Fiscal</th>
+              <th class="center" style="width: 22%;">Referencia / Tasa</th>
+              <th class="right" style="width: 18%;">Importe (MXN)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="center">1</td>
+              <td>Límite de Ingreso Exento de Impuesto</td>
+              <td class="center">Art. 113-A LISR</td>
+              <td class="right"><strong id="ui-amt1">$20,000.00</strong></td>
+            </tr>
+            <tr>
+              <td class="center">2</td>
+              <td>Total de Ingresos Declarados en Plataforma</td>
+              <td class="center">Monto Retenido</td>
+              <td class="right"><strong id="ui-amt2">$23,163.55</strong></td>
+            </tr>
+            <tr>
+              <td class="center">3</td>
+              <td>Base Gravable Sujeta a Impuesto</td>
+              <td class="center">100% Declarado</td>
+              <td class="right"><strong id="ui-amt3">$42,000.00</strong></td>
+            </tr>
+            <tr class="row-orange">
+              <td class="center">4</td>
+              <td>Impuesto Federal a Pagar (<span id="ui-tax-label">45</span>%)</td>
+              <td class="center"><span id="ui-tax-ref">45</span>%</td>
+              <td class="right" id="ui-amt4">$18,900.00</td>
+            </tr>
+            <tr class="row-green">
+              <td class="center">5</td>
+              <td>MONTO TOTAL LIBERABLE TRAS VALIDACIÓN FISCAL</td>
+              <td class="center">Ingreso + Impuesto</td>
+              <td class="right" id="ui-amt5">$60,900.00</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- OFFICIAL NOTICE -->
+        <div class="notice-box">
+          <strong>AVISO OFICIAL DEL SERVICIO DE ADMINISTRACIÓN TRIBUTARIA (SAT):</strong>
+          De conformidad con las disposiciones fiscales vigentes en los Estados Unidos Mexicanos aplicables a los ingresos obtenidos mediante plataformas digitales, los montos superiores al límite exento ($20,000.00 MXN) requieren la liquidación previa de la obligación tributaria correspondiente antes de autorizar la dispersión bancaria definitiva. Una vez validado el pago del impuesto, los fondos retenidos más el reintegro fiscal serán liberados ínteamente a la cuenta CLABE registrada por el contribuyente.
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+          <!-- Left Stamp -->
+          <div class="stamp-circle">
+            <div class="top-arc">NACIONAL DE IMPUESTOS</div>
+            <div class="center-txt">MERCADO<br>LIBRE</div>
+            <div class="bot-arc">MÉXICO</div>
+          </div>
+
+          <!-- Center Digital Signature Chain -->
+          <div class="chain-box">
+            <strong>Cadena Original del Complemento de Certificación Digital del SAT:</strong>
+            <div class="chain-code">
+              ||1.1|F8A92C4E-7B12-4D90-9E3A-2026SATMX001|2026-11-16T05:56:00|SAT970701NN3|Validado por Departamento de Fiscalización Digital Mercado Libre México||
+            </div>
+          </div>
+
+          <!-- Right Stamp -->
+          <div class="verified-box">
+            <div class="verified-title">Revisado por Mercado Libre</div>
+            <div class="verified-sub">(Departamento de Pagos) - Verificado</div>
+            <div class="verified-icons">
+              <div class="check-square">✓</div>
+              <div class="ribbon-icon">🏅</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Standard Text Bindings Configuration
+    const bindings = [
+      ['in-user-name', 'ui-user-name'],
+      ['in-account-id', 'ui-account-id'],
+      ['in-rfc', 'ui-rfc'],
+      ['in-amt1', 'ui-amt1'],
+      ['in-amt2', 'ui-amt2']
+    ];
+
+    bindings.forEach(([inputId, targetId]) => {
+      document.getElementById(inputId).addEventListener('input', (e) => {
+        document.getElementById(targetId).innerText = e.target.value;
+      });
+    });
+
+    // Currency Formatter ($XX,XXX.XX)
+    function formatCurrency(num) {
+      return '$' + num.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
+    // Auto-Calculation Logic for Base Gravable, Tax %, and Total Liberable
+    const inAmt3 = document.getElementById('in-amt3');
+    const inTaxRate = document.getElementById('in-tax-rate');
+    const inAmt4 = document.getElementById('in-amt4');
+    const inAmt5 = document.getElementById('in-amt5');
+
+    const uiAmt3 = document.getElementById('ui-amt3');
+    const uiTaxLabel = document.getElementById('ui-tax-label');
+    const uiTaxRef = document.getElementById('ui-tax-ref');
+    const uiAmt4 = document.getElementById('ui-amt4');
+    const uiAmt5 = document.getElementById('ui-amt5');
+
+    function recalculateTaxes() {
+      const baseAmount = parseFloat(inAmt3.value) || 0;
+      const taxRate = parseFloat(inTaxRate.value) || 0;
+
+      // Calculate Tax & Total
+      const taxAmount = baseAmount * (taxRate / 100);
+      const totalAmount = baseAmount + taxAmount;
+
+      // Format strings
+      const formattedBase = formatCurrency(baseAmount);
+      const formattedTax = formatCurrency(taxAmount);
+      const formattedTotal = formatCurrency(totalAmount);
+
+      // Update UI Table
+      uiAmt3.innerText = formattedBase;
+      uiTaxLabel.innerText = taxRate;
+      uiTaxRef.innerText = taxRate;
+      uiAmt4.innerText = formattedTax;
+      uiAmt5.innerText = formattedTotal;
+
+      // Update Readonly Control Panel Inputs
+      inAmt4.value = formattedTax;
+      inAmt5.value = formattedTotal;
+    }
+
+    inAmt3.addEventListener('input', recalculateTaxes);
+    inTaxRate.addEventListener('input', recalculateTaxes);
+
+    // Logo Image Upload (Enlarged and Clear)
+    document.getElementById('upload-logo').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          const container = document.getElementById('logo-container');
+          container.innerHTML = `<img src="${evt.target.result}" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;">`;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Watermark Image Upload
+    document.getElementById('upload-watermark').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          const container = document.getElementById('watermark-container');
+          container.innerHTML = `<img src="${evt.target.result}" alt="Watermark">`;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  </script>
+
+</body>
+</html>

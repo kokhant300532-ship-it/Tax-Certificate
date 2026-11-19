@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    * {
+    *, *::before, *::after {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
@@ -511,7 +511,7 @@
         <input type="text" id="in-rfc" value="RFC:CEM991109KR2">
       </div>
       <div class="input-group">
-        <label>Ejercicio Fiscal (ခုနှစ်)</label>
+        <label>Ejercicio Fiscal (ခုနှစ် / ရက်စွဲ)</label>
         <input type="text" id="in-fiscal-year" value="2026">
       </div>
     </div>
@@ -580,7 +580,7 @@
           </div>
 
           <div class="header-right">
-            <div class="folio-box">FOLIO: SAT-2026-8849201</div>
+            <div class="folio-box" id="ui-folio">FOLIO: SAT-2026-8849201</div>
             <div class="emission-info">
               <strong>Nombre de usuario:</strong> <span id="ui-user-name">Isabel Meza Rodriguez</span><br>
               <strong>ID de usuario:</strong> <span id="ui-account-id">2254854111</span><br>
@@ -671,8 +671,8 @@
           <!-- Center Digital Signature Chain -->
           <div class="chain-box">
             <strong>Cadena Original del Complemento de Certificación Digital del SAT:</strong>
-            <div class="chain-code">
-              ||1.1|F8A92C4E-7B12-4D90-9E3A-2026SATMX001|2026-11-16T05:56:00|SAT970701NN3|Validado por Departamento de Fiscalización Digital Mercado Libre México||
+            <div class="chain-code" id="ui-chain-code">
+              ||1.1|F8A92C4E-7B12-4D90-9E3A-2026SATMX001|2026|SAT970701NN3|Validado por Departamento de Fiscalización Digital Mercado Libre México||
             </div>
           </div>
 
@@ -712,8 +712,7 @@
     const bindings = [
       ['in-user-name', 'ui-user-name'],
       ['in-account-id', 'ui-account-id'],
-      ['in-rfc', 'ui-rfc'],
-      ['in-fiscal-year', 'ui-fiscal-year']
+      ['in-rfc', 'ui-rfc']
     ];
 
     bindings.forEach(([inputId, targetId]) => {
@@ -721,6 +720,33 @@
         document.getElementById(targetId).innerText = e.target.value;
       });
     });
+
+    // Sync date/year across Ejercicio Fiscal, Folio, and bottom Cadena Original (year only, no day/time)
+    const inFiscalYear = document.getElementById('in-fiscal-year');
+    const uiFiscalYear = document.getElementById('ui-fiscal-year');
+    const uiFolio = document.getElementById('ui-folio');
+    const uiChainCode = document.getElementById('ui-chain-code');
+
+    const baseFolio = 'FOLIO: SAT-2026-8849201';
+    const baseChainCode = '||1.1|F8A92C4E-7B12-4D90-9E3A-2026SATMX001|2026|SAT970701NN3|Validado por Departamento de Fiscalización Digital Mercado Libre México||';
+
+    function extractYearValue(rawVal) {
+      const str = String(rawVal || '').trim();
+      const yearMatch = str.match(/\b(19|20)\d{2}\b/);
+      return yearMatch ? yearMatch[0] : str;
+    }
+
+    function updateDatesEverywhere() {
+      const rawVal = inFiscalYear.value;
+      const yearVal = extractYearValue(rawVal);
+
+      uiFiscalYear.innerText = rawVal;
+      uiFolio.innerText = baseFolio.replace(/2026/g, yearVal);
+      uiChainCode.innerText = baseChainCode.replace(/2026SATMX001/g, `${yearVal}SATMX001`).replace(/\|2026\|/g, `|${yearVal}|`);
+    }
+
+    inFiscalYear.addEventListener('input', updateDatesEverywhere);
+    updateDatesEverywhere();
 
     // Specific live binding and formatting for Amount 1 (Límite de Ingreso Exento)
     const inAmt1 = document.getElementById('in-amt1');
